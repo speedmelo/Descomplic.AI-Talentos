@@ -19,13 +19,15 @@ app = FastAPI(title="DescomplicAI API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://speedmelo.github.io",   # troque pelo seu frontend real
+        "https://speedmelo.github.io",          # Mantém esse se quiser testar no domínio principal
+        "https://speedmelo.github.io/descomplicai-talentos", # O NOVO LINK AQUI
         "http://localhost:5500",
         "http://127.0.0.1:5500",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
 )
 
 SYSTEM_INSTRUCTION = """
