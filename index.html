@@ -3,178 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descomplic.AI | Recursos Humanos - MSA</title>
+    <title>Descomplic.AI | Recursos Humanos - Melo Strategic A.I</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
-        body { 
-            background-color: #020617; 
+        body {
+            background-color: #020617;
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at top right, #064e3b33, transparent), radial-gradient(circle at bottom left, #020617, transparent);
+            background-image:
+                radial-gradient(circle at top right, rgba(16,185,129,0.10), transparent 30%),
+                radial-gradient(circle at bottom left, rgba(15,23,42,1), transparent 35%);
+            overflow-x: hidden;
         }
+
         .glass-card {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(16, 185, 129, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(16, 185, 129, 0.10);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
         }
-        .emerald-glow {
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+
+        .glass-soft {
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.08);
         }
+
         .btn-premium {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
         }
+
         .btn-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
         }
-        .loading-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+
+        .btn-premium:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .border-glow {
+            box-shadow: 0 0 0 1px rgba(16,185,129,0.12), 0 0 30px rgba(16,185,129,0.08);
+        }
+
+        .dropzone-hover {
+            border-color: rgba(16, 185, 129, 0.50) !important;
+            background: rgba(16, 185, 129, 0.06);
+        }
+
+        .score-ring {
+            background:
+                radial-gradient(closest-side, rgba(15,23,42,0.95) 79%, transparent 80% 100%),
+                conic-gradient(#10b981 var(--score, 0%), rgba(30,41,59,0.9) 0);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loading-bar {
+            background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.75), rgba(16,185,129,0.15));
             background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+            animation: loadingMove 1.6s linear infinite;
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+
+        @keyframes loadingMove {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .hero-grid::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+            pointer-events: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16,185,129,0.45);
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15,23,42,0.5);
         }
     </style>
 </head>
 <body class="text-slate-300 min-h-screen pb-20">
 
-    <nav class="max-w-7xl mx-auto p-8 flex justify-between items-center">
+    <nav class="max-w-7xl mx-auto px-6 py-6 md:px-8 md:py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="flex items-center gap-4">
-            <div class="h-10 w-1 bg-emerald-500 rounded-full"></div>
+            <div class="h-11 w-1.5 bg-emerald-500 rounded-full"></div>
             <div>
-                <h2 class="text-white font-extrabold text-2xl tracking-tighter">DESCOMPLIC.<span class="text-emerald-500">AI</span></h2>
-                <p class="text-[10px] text-slate-500 uppercase tracking-[0.4em] font-bold">Recursos Humanos</p>
+                <h2 class="text-white font-black text-2xl tracking-tighter">DESCOMPLIC.<span class="text-emerald-500">AI</span></h2>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.35em] font-bold">Recursos Humanos</p>
             </div>
         </div>
-        <div class="text-right">
-            <p class="text-[9px] text-slate-600 uppercase tracking-widest">Melo Strategic AI</p>
-            <p class="text-white text-[11px] font-semibold">Unified Intelligence System</p>
+
+        <div class="text-left md:text-right">
+            <p class="text-[9px] text-slate-600 uppercase tracking-[0.35em]">Melo Strategic A.I</p>
+            <p class="text-white text-[11px] font-semibold">Powered by Unified Intelligence Systems</p>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-6">
-        
-        <header class="text-center mt-12 mb-16">
-            <h1 class="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight">
-                Análise de Talento <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Alta Performance.</span>
-            </h1>
-            <p class="text-slate-400 max-w-xl mx-auto text-lg font-light leading-relaxed">
-                Extração estratégica de competências e análise de match para decisões executivas de contratação.
-            </p>
-        </header>
+    <main class="max-w-6xl mx-auto px-6 relative">
+        <section class="hero-grid relative text-center mt-8 md:mt-12 mb-12 md:mb-16">
+            <div class="max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-soft text-emerald-400 text-[11px] uppercase tracking-[0.25em] font-bold mb-6 border-glow">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Recrutamento assistido por IA
+                </div>
 
-        <div class="glass-card rounded-3xl p-12 text-center border-2 border-dashed border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer relative overflow-hidden group">
+                <h1 class="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight mb-6">
+                    Analise currículos com IA e
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">
+                        contrate com mais precisão.
+                    </span>
+                </h1>
+
+                <p class="text-slate-400 max-w-3xl mx-auto text-base md:text-lg font-light leading-relaxed">
+                    Receba score de aderência, resumo estratégico, competências-chave e uma pergunta poderosa para entrevista em segundos.
+                </p>
+
+                <div class="mt-8 flex flex-wrap justify-center gap-3 text-[11px] uppercase tracking-[0.2em] font-bold text-slate-500">
+                    <span class="glass-soft px-4 py-2 rounded-full">Triagem inteligente</span>
+                    <span class="glass-soft px-4 py-2 rounded-full">Leitura de currículo em PDF</span>
+                    <span class="glass-soft px-4 py-2 rounded-full">Insights executivos</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <div class="glass-card rounded-2xl p-5 fade-in-up">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] mb-3">1. Score de aderência</p>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Avaliação rápida do potencial do candidato para tomada de decisão com menos subjetividade.
+                </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 fade-in-up" style="animation-delay: 0.08s;">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] mb-3">2. Competências mapeadas</p>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Extração automática de habilidades, domínios e sinais estratégicos do currículo.
+                </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 fade-in-up" style="animation-delay: 0.16s;">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] mb-3">3. Pergunta ideal</p>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Gere uma pergunta de entrevista para validar risco, aderência e maturidade profissional.
+                </p>
+            </div>
+        </section>
+
+        <section id="uploadCard" class="glass-card rounded-3xl p-8 md:p-12 border-2 border-dashed border-slate-800 hover:border-emerald-500/50 transition-all relative overflow-hidden group">
             <input type="file" id="fileInput" class="hidden" accept="application/pdf">
-            <label for="fileInput" class="cursor-pointer">
+
+            <label for="fileInput" class="cursor-pointer block">
                 <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-file-invoice text-3xl"></i>
+                    <i class="fas fa-file-lines text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2">Importar Currículo em PDF</h3>
-                <p class="text-slate-500 text-sm">Arraste o arquivo aqui ou clique para selecionar</p>
+
+                <h3 class="text-2xl font-black text-white mb-3">Importar currículo em PDF</h3>
+                <p class="text-slate-500 text-sm md:text-base">
+                    Arraste o arquivo aqui ou clique para selecionar.
+                </p>
+                <p class="text-slate-600 text-xs uppercase tracking-[0.25em] mt-4">
+                    Leitura rápida • análise estratégica • decisão mais clara
+                </p>
             </label>
-            
-            <div id="fileInfo" class="mt-6 hidden">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-400 text-xs border border-emerald-500/30">
-                    <i class="fas fa-check-circle"></i> <span id="fileNameDisplay">arquivo.pdf</span>
+
+            <div id="fileInfo" class="mt-8 hidden fade-in">
+                <div class="inline-flex flex-wrap items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/15 text-emerald-400 text-xs border border-emerald-500/30">
+                    <i class="fas fa-circle-check"></i>
+                    <span id="fileNameDisplay">arquivo.pdf</span>
                 </div>
-                <div class="mt-6">
-                    <button onclick="analisarRH()" id="btnAnalisar" class="btn-premium px-10 py-4 rounded-xl font-bold text-white text-sm tracking-widest uppercase">
-                        Iniciar Análise Estratégica
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="analisarRH()" id="btnAnalisar" class="btn-premium px-10 py-4 rounded-xl font-black text-white text-sm tracking-[0.18em] uppercase">
+                        Iniciar análise estratégica
+                    </button>
+
+                    <button onclick="limparArquivo()" class="px-8 py-4 rounded-xl font-bold text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white transition-all text-sm uppercase tracking-[0.15em]">
+                        Trocar arquivo
                     </button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="loading" class="hidden mt-12 text-center py-20 glass-card rounded-3xl">
-            <div class="flex justify-center gap-1 mb-6">
-                <div class="w-2 h-8 bg-emerald-500 animate-bounce"></div>
-                <div class="w-2 h-8 bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
-                <div class="w-2 h-8 bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
+        <section id="loading" class="hidden mt-12 glass-card rounded-3xl p-8 md:p-10 fade-in">
+            <div class="max-w-2xl mx-auto text-center">
+                <div class="flex justify-center gap-2 mb-6">
+                    <div class="w-2 h-9 bg-emerald-500 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-9 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                    <div class="w-2 h-9 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                </div>
+
+                <p class="text-emerald-400 font-black text-xs tracking-[0.35em] uppercase mb-6">
+                    Processamento estratégico em andamento
+                </p>
+
+                <p id="loadingMessage" class="text-white text-lg font-semibold mb-4">
+                    Mapeando competências do candidato...
+                </p>
+
+                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="loading-bar h-full w-full rounded-full"></div>
+                </div>
+
+                <p class="text-slate-500 text-sm mt-4">
+                    Nossa IA está avaliando aderência, repertório técnico e sinais de entrevista.
+                </p>
             </div>
-            <p class="text-emerald-400 font-mono text-xs tracking-[0.3em] uppercase">Sincronizando Core da IA...</p>
-        </div>
+        </section>
 
-        <div id="resultados" class="hidden mt-12 space-y-8 animate-[fadeIn_0.6s_ease-out]">
-            
+        <section id="resultados" class="hidden mt-12 space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass-card p-8 rounded-3xl text-center">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Aderência ao Perfil</p>
-                    <div id="scoreCandidato" class="text-6xl font-black text-white">--</div>
-                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
-                        <div id="scoreBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
+                <div class="glass-card p-8 rounded-3xl text-center fade-in-up">
+                    <p class="text-xs uppercase tracking-[0.25em] text-slate-500 mb-4 font-bold">Aderência ao perfil</p>
+
+                    <div class="mx-auto w-36 h-36 rounded-full score-ring flex items-center justify-center" id="scoreRing" style="--score: 0%;">
+                        <div>
+                            <div id="scoreCandidato" class="text-4xl font-black text-white">--</div>
+                            <p class="text-[10px] uppercase tracking-[0.25em] text-slate-500 mt-1">Score</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-6 overflow-hidden">
+                        <div id="scoreBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000 rounded-full"></div>
                     </div>
                 </div>
-                <div class="glass-card p-8 rounded-3xl md:col-span-2 flex flex-col justify-center">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Veredito Executivo</p>
-                    <div id="veredito" class="text-2xl font-semibold text-emerald-100 italic">--</div>
+
+                <div class="glass-card p-8 rounded-3xl md:col-span-2 flex flex-col justify-center fade-in-up" style="animation-delay: 0.08s;">
+                    <p class="text-xs uppercase tracking-[0.25em] text-slate-500 mb-3 font-bold">Veredito executivo</p>
+                    <div id="veredito" class="text-2xl md:text-3xl font-semibold text-emerald-100 italic leading-snug">--</div>
+
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <span class="px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] uppercase tracking-[0.2em] font-bold border border-emerald-500/20">
+                            Análise assistida por IA
+                        </span>
+                        <span class="px-4 py-2 rounded-full bg-slate-800 text-slate-400 text-[11px] uppercase tracking-[0.2em] font-bold border border-slate-700">
+                            Leitura de currículo em PDF
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div class="glass-card p-8 rounded-3xl">
+            <div class="glass-card p-8 rounded-3xl fade-in-up" style="animation-delay: 0.12s;">
                 <div class="flex items-center gap-3 mb-6">
-                    <i class="fas fa-quote-left text-emerald-500 text-xl"></i>
-                    <h4 class="text-white font-bold tracking-tight">RESUMO ESTRATÉGICO</h4>
+                    <i class="fas fa-layer-group text-emerald-500 text-xl"></i>
+                    <h4 class="text-white font-black tracking-[0.15em] text-sm uppercase">Resumo estratégico</h4>
                 </div>
-                <p id="resumo" class="text-slate-400 leading-relaxed text-lg font-light"></p>
+                <p id="resumo" class="text-slate-400 leading-relaxed text-base md:text-lg font-light"></p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] px-2">Habilidades e Domínios</h4>
+                <div class="space-y-4 fade-in-up" style="animation-delay: 0.16s;">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.25em] px-2">Competências e domínios</h4>
                     <div id="skills" class="space-y-3"></div>
                 </div>
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] px-2">Insights de Liderança</h4>
+
+                <div class="space-y-4 fade-in-up" style="animation-delay: 0.2s;">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.25em] px-2">Insights de liderança</h4>
                     <div id="analise" class="space-y-4"></div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-emerald-500/20 to-transparent border border-emerald-500/20 p-10 rounded-3xl relative overflow-hidden">
+            <div class="bg-gradient-to-br from-emerald-500/18 to-transparent border border-emerald-500/20 p-8 md:p-10 rounded-3xl relative overflow-hidden fade-in-up" style="animation-delay: 0.24s;">
                 <div class="absolute top-0 right-0 p-8 opacity-10">
-                    <i class="fas fa-comment-dots text-6xl text-emerald-500"></i>
+                    <i class="fas fa-comments text-6xl text-emerald-500"></i>
                 </div>
-                <h4 class="text-white font-bold mb-4 flex items-center gap-2">
-                    <span class="h-2 w-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    PERGUNTA CRUCIAL PARA ENTREVISTA
+
+                <h4 class="text-white font-black mb-4 flex items-center gap-3 text-sm uppercase tracking-[0.2em]">
+                    <span class="h-2.5 w-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Pergunta estratégica para entrevista
                 </h4>
-                <p id="pergunta" class="text-emerald-100 text-xl font-light italic leading-snug"></p>
+
+                <p id="pergunta" class="text-emerald-100 text-xl md:text-2xl font-light italic leading-snug"></p>
             </div>
-        </div>
+        </section>
+
+        <section class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-soft rounded-2xl p-5 text-center">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.25em] mb-2">RH mais rápido</p>
+                <p class="text-slate-500 text-sm">Reduza o tempo de leitura manual de currículos.</p>
+            </div>
+            <div class="glass-soft rounded-2xl p-5 text-center">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.25em] mb-2">Mais objetividade</p>
+                <p class="text-slate-500 text-sm">Ganhe critérios mais consistentes para triagem inicial.</p>
+            </div>
+            <div class="glass-soft rounded-2xl p-5 text-center">
+                <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.25em] mb-2">Melhor entrevista</p>
+                <p class="text-slate-500 text-sm">Entre na conversa com perguntas mais estratégicas.</p>
+            </div>
+        </section>
     </main>
 
-    <footer class="mt-20 py-12 text-center">
+    <footer class="mt-20 py-12 text-center px-6">
         <div class="opacity-30 flex items-center justify-center gap-6 mb-4">
             <div class="h-[1px] w-12 bg-slate-500"></div>
-            <span class="text-[10px] tracking-[0.5em] uppercase text-slate-400">Melo Strategic AI</span>
+            <span class="text-[10px] tracking-[0.5em] uppercase text-slate-400">Melo Strategic A.I</span>
             <div class="h-[1px] w-12 bg-slate-500"></div>
         </div>
-        <p class="text-slate-600 text-[10px]">© 2026 DESCOMPLIC.AI - TODOS OS DIREITOS RESERVADOS</p>
+
+        <p class="text-slate-600 text-[10px] uppercase tracking-[0.2em]">
+            © 2026 Descomplic.AI | Recursos Humanos — Todos os direitos reservados
+        </p>
     </footer>
 
     <script>
         const API_URL = "https://descomplic-ai-talentos.onrender.com/analyze";
 
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            if(e.target.files.length > 0) {
-                document.getElementById('fileNameDisplay').innerText = e.target.files[0].name;
-                document.getElementById('fileInfo').classList.remove('hidden');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const uploadCard = document.getElementById('uploadCard');
+        const loading = document.getElementById('loading');
+        const resultados = document.getElementById('resultados');
+        const btnAnalisar = document.getElementById('btnAnalisar');
+        const loadingMessage = document.getElementById('loadingMessage');
+
+        const loadingMessages = [
+            "Mapeando competências do candidato...",
+            "Calculando aderência ao perfil...",
+            "Gerando insights estratégicos para entrevista..."
+        ];
+
+        let loadingInterval = null;
+
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                fileNameDisplay.innerText = `${file.name} • ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                fileInfo.classList.remove('hidden');
+            } else {
+                fileInfo.classList.add('hidden');
             }
         });
 
-        async function analisarRH() {
-            const file = document.getElementById('fileInput').files[0];
-            const loading = document.getElementById('loading');
-            const resultados = document.getElementById('resultados');
+        uploadCard.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadCard.classList.add('dropzone-hover');
+        });
 
-            if(!file) return;
+        uploadCard.addEventListener('dragleave', () => {
+            uploadCard.classList.remove('dropzone-hover');
+        });
+
+        uploadCard.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadCard.classList.remove('dropzone-hover');
+
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+
+                if (file.type !== 'application/pdf') {
+                    alert("Envie apenas arquivos PDF.");
+                    return;
+                }
+
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+
+                fileNameDisplay.innerText = `${file.name} • ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                fileInfo.classList.remove('hidden');
+            }
+        });
+
+        function limparArquivo() {
+            fileInput.value = "";
+            fileInfo.classList.add('hidden');
+            resultados.classList.add('hidden');
+            fileNameDisplay.innerText = "arquivo.pdf";
+        }
+
+        function iniciarLoadingInteligente() {
+            let index = 0;
+            loadingMessage.innerText = loadingMessages[index];
+
+            loadingInterval = setInterval(() => {
+                index = (index + 1) % loadingMessages.length;
+                loadingMessage.innerText = loadingMessages[index];
+            }, 1800);
+        }
+
+        function pararLoadingInteligente() {
+            if (loadingInterval) {
+                clearInterval(loadingInterval);
+                loadingInterval = null;
+            }
+        }
+
+        function obterClasseScore(score) {
+            if (score >= 80) return "text-emerald-400";
+            if (score >= 60) return "text-amber-400";
+            return "text-rose-400";
+        }
+
+        async function analisarRH() {
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Selecione um currículo em PDF.");
+                return;
+            }
+
+            if (file.type !== "application/pdf") {
+                alert("Formato inválido. Envie um PDF.");
+                return;
+            }
 
             loading.classList.remove('hidden');
             resultados.classList.add('hidden');
+            btnAnalisar.disabled = true;
+            iniciarLoadingInteligente();
 
             const formData = new FormData();
             formData.append('file', file);
@@ -184,39 +464,74 @@
                     method: 'POST',
                     body: formData
                 });
-                
-                const data = await response.json();
-                const d = data.dados;
 
-                // Preencher com animação
-                document.getElementById('scoreCandidato').innerText = d.score_candidato + "%";
-                document.getElementById('scoreBar').style.width = d.score_candidato + "%";
-                document.getElementById('veredito').innerText = d.veredito;
-                document.getElementById('resumo').innerText = d.resumo_profissional;
-                document.getElementById('pergunta').innerText = d.sugestao_entrevista;
+                if (!response.ok) {
+                    const erro = await response.json().catch(() => null);
+                    throw new Error(erro?.detail || "Falha ao processar o currículo.");
+                }
+
+                const data = await response.json();
+
+                if (!data || !data.dados) {
+                    throw new Error("Resposta inválida do servidor.");
+                }
+
+                const d = data.dados;
+                const score = Number(d.score_candidato ?? 0);
+                const competencias = Array.isArray(d.competencias_chave) ? d.competencias_chave : [];
+                const analises = Array.isArray(d.analise_estrategica) ? d.analise_estrategica : [];
+
+                const scoreEl = document.getElementById('scoreCandidato');
+                const scoreBar = document.getElementById('scoreBar');
+                const scoreRing = document.getElementById('scoreRing');
+
+                scoreEl.innerText = `${score}%`;
+                scoreEl.className = `text-4xl font-black ${obterClasseScore(score)}`;
+                scoreBar.style.width = `${score}%`;
+                scoreRing.style.setProperty('--score', `${score}%`);
+
+                document.getElementById('veredito').innerText = d.veredito || "Sem veredito disponível.";
+                document.getElementById('resumo').innerText = d.resumo_profissional || "Resumo profissional não disponível.";
+                document.getElementById('pergunta').innerText = d.sugestao_entrevista || "Pergunta estratégica não disponível.";
 
                 const skillsList = document.getElementById('skills');
-                skillsList.innerHTML = d.competencias_chave.map(c => 
-                    `<div class="glass-card p-4 rounded-2xl border-l-4 border-emerald-500/50">
-                        <p class="text-[10px] text-emerald-500 font-bold uppercase mb-1">${c.categoria}</p>
-                        <p class="text-white text-sm">${c.detalhe}</p>
-                    </div>`
-                ).join('');
+                skillsList.innerHTML = competencias.length
+                    ? competencias.map(c => `
+                        <div class="glass-card p-4 rounded-2xl border-l-4 border-emerald-500/50">
+                            <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-[0.18em] mb-1">${c.categoria || "Competência"}</p>
+                            <p class="text-white text-sm leading-relaxed">${c.detalhe || "Sem detalhe disponível."}</p>
+                        </div>
+                    `).join('')
+                    : `
+                        <div class="glass-card p-4 rounded-2xl">
+                            <p class="text-slate-400 text-sm">Nenhuma competência-chave foi identificada.</p>
+                        </div>
+                    `;
 
                 const analiseList = document.getElementById('analise');
-                analiseList.innerHTML = d.analise_estrategica.map(a => 
-                    `<div class="border-b border-slate-800 pb-4">
-                        <p class="text-white text-sm font-semibold mb-1">${a.ponto}</p>
-                        <p class="text-slate-500 text-xs leading-relaxed">${a.observacao}</p>
-                    </div>`
-                ).join('');
+                analiseList.innerHTML = analises.length
+                    ? analises.map(a => `
+                        <div class="glass-card p-4 rounded-2xl">
+                            <p class="text-white text-sm font-semibold mb-2">${a.ponto || "Insight estratégico"}</p>
+                            <p class="text-slate-500 text-xs leading-relaxed">${a.observacao || "Sem observação disponível."}</p>
+                        </div>
+                    `).join('')
+                    : `
+                        <div class="glass-card p-4 rounded-2xl">
+                            <p class="text-slate-400 text-sm">Nenhum insight estratégico foi retornado.</p>
+                        </div>
+                    `;
 
-                loading.classList.add('hidden');
                 resultados.classList.remove('hidden');
+                resultados.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             } catch (error) {
-                alert("Erro na conexão estratégica. Verifique o servidor.");
+                console.error("Erro detalhado:", error);
+                alert(`Erro na análise: ${error.message}`);
+            } finally {
+                pararLoadingInteligente();
                 loading.classList.add('hidden');
+                btnAnalisar.disabled = false;
             }
         }
     </script>
