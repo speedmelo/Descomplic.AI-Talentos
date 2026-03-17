@@ -27,7 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-)
 
 SYSTEM_INSTRUCTION = """
 Você é o 'DescomplicAI', um advogado sênior especialista em Direito Civil, Consumidor e Trabalhista brasileiro.
