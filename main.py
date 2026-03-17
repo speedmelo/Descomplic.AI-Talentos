@@ -19,11 +19,7 @@ app = FastAPI(title="DescomplicAI - RH Premium")
 # Configuração de CORS atualizada com o seu link da Vercel
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://descomplic-ai-talentos-ks1a.vercel.app", 
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
