@@ -21,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
    allow_origins=[
     "https://speedmelo.github.io",  # Adicione esta linha exata
-    "https://descomplic-ai-talentos-ks1a-git-main-speedmelos-projects.vercel.app",
+    "https://descomplic-ai-talentos-ks1a.vercel.app",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
 ],
