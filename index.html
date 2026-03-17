@@ -56,8 +56,8 @@
         }
 
         .dropzone-hover {
-            border-color: rgba(16, 185, 129, 0.50) !important;
-            background: rgba(16, 185, 129, 0.06);
+            border-color: rgba(16, 185, 129, 0.55) !important;
+            background: rgba(16, 185, 129, 0.07);
         }
 
         .score-ring {
@@ -113,14 +113,6 @@
             pointer-events: none;
         }
 
-        .brand-hero-logo {
-            width: 100%;
-            max-width: 440px;
-            height: auto;
-            margin: 0 auto 1.5rem auto;
-            filter: drop-shadow(0 18px 30px rgba(0,0,0,0.28));
-        }
-
         .brand-nav-icon {
             width: 44px;
             height: 44px;
@@ -129,6 +121,24 @@
             background: rgba(255,255,255,0.95);
             padding: 6px;
             box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        }
+
+        .upload-priority {
+            position: relative;
+            margin-top: -1.5rem;
+            z-index: 20;
+        }
+
+        .upload-card-strong {
+            border: 1px solid rgba(16, 185, 129, 0.20);
+            box-shadow:
+                0 0 0 1px rgba(16,185,129,0.10),
+                0 18px 40px rgba(0,0,0,0.28),
+                0 0 40px rgba(16,185,129,0.06);
+        }
+
+        .upload-icon-wrap {
+            box-shadow: 0 0 0 1px rgba(16,185,129,0.15), 0 16px 30px rgba(16,185,129,0.10);
         }
 
         .legal-link {
@@ -190,6 +200,12 @@
         ::-webkit-scrollbar-track {
             background: rgba(15,23,42,0.5);
         }
+
+        @media (max-width: 768px) {
+            .upload-priority {
+                margin-top: -0.5rem;
+            }
+        }
     </style>
 </head>
 <body class="text-slate-300 min-h-screen pb-20">
@@ -210,10 +226,8 @@
     </nav>
 
     <main class="max-w-6xl mx-auto px-6 relative">
-        <section class="hero-grid relative text-center mt-8 md:mt-12 mb-12 md:mb-16">
+        <section class="hero-grid relative text-center mt-6 md:mt-10 mb-6 md:mb-8">
             <div class="max-w-4xl mx-auto">
-                <img src="logo cor RH.png" alt="Descomplic.AI Recursos Humanos" class="brand-hero-logo">
-
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-soft text-emerald-400 text-[11px] uppercase tracking-[0.25em] font-bold mb-6 border-glow">
                     <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Recrutamento assistido por IA
@@ -238,6 +252,51 @@
             </div>
         </section>
 
+        <section id="uploadCard" class="upload-priority glass-card upload-card-strong rounded-3xl p-8 md:p-10 border-2 border-dashed border-slate-800 hover:border-emerald-500/50 transition-all relative overflow-hidden group mb-10">
+            <input type="file" id="fileInput" class="hidden" accept="application/pdf">
+
+            <label for="fileInput" class="cursor-pointer block text-center">
+                <div class="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-3xl bg-emerald-500/12 text-emerald-500 group-hover:scale-110 transition-transform duration-500 upload-icon-wrap">
+                    <i class="fas fa-file-arrow-up text-4xl"></i>
+                </div>
+
+                <p class="text-emerald-400 text-[11px] font-black uppercase tracking-[0.32em] mb-3">
+                    Ação principal
+                </p>
+
+                <h3 class="text-2xl md:text-3xl font-black text-white mb-3">
+                    Clique aqui para importar o currículo em PDF
+                </h3>
+
+                <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+                    Arraste o arquivo para esta área ou toque aqui para selecionar o PDF e iniciar sua análise estratégica.
+                </p>
+
+                <div class="mt-6 flex flex-wrap justify-center gap-3 text-[10px] uppercase tracking-[0.2em] font-bold text-slate-500">
+                    <span class="glass-soft px-4 py-2 rounded-full">Upload seguro</span>
+                    <span class="glass-soft px-4 py-2 rounded-full">Leitura imediata</span>
+                    <span class="glass-soft px-4 py-2 rounded-full">Resultado executivo</span>
+                </div>
+            </label>
+
+            <div id="fileInfo" class="mt-8 hidden fade-in text-center">
+                <div class="inline-flex flex-wrap items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/15 text-emerald-400 text-xs border border-emerald-500/30">
+                    <i class="fas fa-circle-check"></i>
+                    <span id="fileNameDisplay">arquivo.pdf</span>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="analisarRH()" id="btnAnalisar" class="btn-premium px-10 py-4 rounded-xl font-black text-white text-sm tracking-[0.18em] uppercase">
+                        Iniciar análise estratégica
+                    </button>
+
+                    <button onclick="limparArquivo()" class="px-8 py-4 rounded-xl font-bold text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white transition-all text-sm uppercase tracking-[0.15em]">
+                        Trocar arquivo
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
             <div class="glass-card rounded-2xl p-5 fade-in-up">
                 <p class="text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] mb-3">1. Score de aderência</p>
@@ -258,41 +317,6 @@
                 <p class="text-slate-400 text-sm leading-relaxed">
                     Gere uma pergunta de entrevista para validar risco, aderência e maturidade profissional.
                 </p>
-            </div>
-        </section>
-
-        <section id="uploadCard" class="glass-card rounded-3xl p-8 md:p-12 border-2 border-dashed border-slate-800 hover:border-emerald-500/50 transition-all relative overflow-hidden group">
-            <input type="file" id="fileInput" class="hidden" accept="application/pdf">
-
-            <label for="fileInput" class="cursor-pointer block">
-                <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-file-lines text-3xl"></i>
-                </div>
-
-                <h3 class="text-2xl font-black text-white mb-3">Importar currículo em PDF</h3>
-                <p class="text-slate-500 text-sm md:text-base">
-                    Arraste o arquivo aqui ou clique para selecionar.
-                </p>
-                <p class="text-slate-600 text-xs uppercase tracking-[0.25em] mt-4">
-                    Leitura rápida • análise estratégica • decisão mais clara
-                </p>
-            </label>
-
-            <div id="fileInfo" class="mt-8 hidden fade-in">
-                <div class="inline-flex flex-wrap items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/15 text-emerald-400 text-xs border border-emerald-500/30">
-                    <i class="fas fa-circle-check"></i>
-                    <span id="fileNameDisplay">arquivo.pdf</span>
-                </div>
-
-                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onclick="analisarRH()" id="btnAnalisar" class="btn-premium px-10 py-4 rounded-xl font-black text-white text-sm tracking-[0.18em] uppercase">
-                        Iniciar análise estratégica
-                    </button>
-
-                    <button onclick="limparArquivo()" class="px-8 py-4 rounded-xl font-bold text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white transition-all text-sm uppercase tracking-[0.15em]">
-                        Trocar arquivo
-                    </button>
-                </div>
             </div>
         </section>
 
