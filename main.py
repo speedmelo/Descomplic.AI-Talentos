@@ -20,7 +20,7 @@ app = FastAPI(title="DescomplicAI - RH Premium")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://descomplic-ai-talentos-ks1a.vercel.app", 
+        "https://descomplic-ai-talentos-ks1a-git-main-speedmelos-projects.vercel.app", 
         "http://localhost:5500",
         "http://127.0.0.1:5500",
     ],
