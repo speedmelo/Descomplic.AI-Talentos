@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descomplic.AI | Recursos Humanos - MSA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #020617; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at top right, #064e3b33, transparent), radial-gradient(circle at bottom left, #020617, transparent);
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .emerald-glow {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        .btn-premium {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+        .loading-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="text-slate-300 min-h-screen pb-20">
+
+    <nav class="max-w-7xl mx-auto p-8 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-1 bg-emerald-500 rounded-full"></div>
+            <div>
+                <h2 class="text-white font-extrabold text-2xl tracking-tighter">DESCOMPLIC.<span class="text-emerald-500">AI</span></h2>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.4em] font-bold">Recursos Humanos</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <p class="text-[9px] text-slate-600 uppercase tracking-widest">Melo Strategic AI</p>
+            <p class="text-white text-[11px] font-semibold">Unified Intelligence System</p>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6">
+        
+        <header class="text-center mt-12 mb-16">
+            <h1 class="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight">
+                Análise de Talento <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Alta Performance.</span>
+            </h1>
+            <p class="text-slate-400 max-w-xl mx-auto text-lg font-light leading-relaxed">
+                Extração estratégica de competências e análise de match para decisões executivas de contratação.
+            </p>
+        </header>
+
+        <div class="glass-card rounded-3xl p-12 text-center border-2 border-dashed border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer relative overflow-hidden group">
+            <input type="file" id="fileInput" class="hidden" accept="application/pdf">
+            <label for="fileInput" class="cursor-pointer">
+                <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-file-invoice text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Importar Currículo em PDF</h3>
+                <p class="text-slate-500 text-sm">Arraste o arquivo aqui ou clique para selecionar</p>
+            </label>
+            
+            <div id="fileInfo" class="mt-6 hidden">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-400 text-xs border border-emerald-500/30">
+                    <i class="fas fa-check-circle"></i> <span id="fileNameDisplay">arquivo.pdf</span>
+                </div>
+                <div class="mt-6">
+                    <button onclick="analisarRH()" id="btnAnalisar" class="btn-premium px-10 py-4 rounded-xl font-bold text-white text-sm tracking-widest uppercase">
+                        Iniciar Análise Estratégica
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden mt-12 text-center py-20 glass-card rounded-3xl">
+            <div class="flex justify-center gap-1 mb-6">
+                <div class="w-2 h-8 bg-emerald-500 animate-bounce"></div>
+                <div class="w-2 h-8 bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
+                <div class="w-2 h-8 bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
+            </div>
+            <p class="text-emerald-400 font-mono text-xs tracking-[0.3em] uppercase">Sincronizando Core da IA...</p>
+        </div>
+
+        <div id="resultados" class="hidden mt-12 space-y-8 animate-[fadeIn_0.6s_ease-out]">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 rounded-3xl text-center">
+                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Aderência ao Perfil</p>
+                    <div id="scoreCandidato" class="text-6xl font-black text-white">--</div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
+                        <div id="scoreBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-3xl md:col-span-2 flex flex-col justify-center">
+                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-2 font-bold">Veredito Executivo</p>
+                    <div id="veredito" class="text-2xl font-semibold text-emerald-100 italic">--</div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fas fa-quote-left text-emerald-500 text-xl"></i>
+                    <h4 class="text-white font-bold tracking-tight">RESUMO ESTRATÉGICO</h4>
+                </div>
+                <p id="resumo" class="text-slate-400 leading-relaxed text-lg font-light"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] px-2">Habilidades e Domínios</h4>
+                    <div id="skills" class="space-y-3"></div>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] px-2">Insights de Liderança</h4>
+                    <div id="analise" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-emerald-500/20 to-transparent border border-emerald-500/20 p-10 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                    <i class="fas fa-comment-dots text-6xl text-emerald-500"></i>
+                </div>
+                <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                    <span class="h-2 w-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    PERGUNTA CRUCIAL PARA ENTREVISTA
+                </h4>
+                <p id="pergunta" class="text-emerald-100 text-xl font-light italic leading-snug"></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-12 text-center">
+        <div class="opacity-30 flex items-center justify-center gap-6 mb-4">
+            <div class="h-[1px] w-12 bg-slate-500"></div>
+            <span class="text-[10px] tracking-[0.5em] uppercase text-slate-400">Melo Strategic AI</span>
+            <div class="h-[1px] w-12 bg-slate-500"></div>
+        </div>
+        <p class="text-slate-600 text-[10px]">© 2026 DESCOMPLIC.AI - TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <script>
+        const API_URL = "URL_DO_SEU_NOVO_RENDER_RH/analyze";
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if(e.target.files.length > 0) {
+                document.getElementById('fileNameDisplay').innerText = e.target.files[0].name;
+                document.getElementById('fileInfo').classList.remove('hidden');
+            }
+        });
+
+        async function analisarRH() {
+            const file = document.getElementById('fileInput').files[0];
+            const loading = document.getElementById('loading');
+            const resultados = document.getElementById('resultados');
+
+            if(!file) return;
+
+            loading.classList.remove('hidden');
+            resultados.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                const d = data.dados;
+
+                // Preencher com animação
+                document.getElementById('scoreCandidato').innerText = d.score_candidato + "%";
+                document.getElementById('scoreBar').style.width = d.score_candidato + "%";
+                document.getElementById('veredito').innerText = d.veredito;
+                document.getElementById('resumo').innerText = d.resumo_profissional;
+                document.getElementById('pergunta').innerText = d.sugestao_entrevista;
+
+                const skillsList = document.getElementById('skills');
+                skillsList.innerHTML = d.competencias_chave.map(c => 
+                    `<div class="glass-card p-4 rounded-2xl border-l-4 border-emerald-500/50">
+                        <p class="text-[10px] text-emerald-500 font-bold uppercase mb-1">${c.categoria}</p>
+                        <p class="text-white text-sm">${c.detalhe}</p>
+                    </div>`
+                ).join('');
+
+                const analiseList = document.getElementById('analise');
+                analiseList.innerHTML = d.analise_estrategica.map(a => 
+                    `<div class="border-b border-slate-800 pb-4">
+                        <p class="text-white text-sm font-semibold mb-1">${a.ponto}</p>
+                        <p class="text-slate-500 text-xs leading-relaxed">${a.observacao}</p>
+                    </div>`
+                ).join('');
+
+                loading.classList.add('hidden');
+                resultados.classList.remove('hidden');
+
+            } catch (error) {
+                alert("Erro na conexão estratégica. Verifique o servidor.");
+                loading.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
