@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from typing import Any
+from typing import Any, List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -16,7 +16,7 @@ from google.genai import types
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("descomplicai_rh")
+logger = logging.getLogger("descomplicai_rh_multi")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PORT = int(os.environ.get("PORT", 8000))
@@ -28,7 +28,7 @@ client = genai.Client(api_key=GOOGLE_API_KEY)
 
 app = FastAPI(
     title="DescomplicAI RH API",
-    version="2.0.0",
+    version="3.0.0",
     description="API de análise estratégica de currículos com IA"
 )
 
@@ -40,7 +40,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://speedmelo.github.io",
-        "descomplic-ai-talentos-ks1a.vercel.app",
         "http://localhost:5500",
         "http://127.0.0.1:5500",
         "http://localhost:3000",
@@ -52,10 +51,10 @@ app.add_middleware(
 )
 
 # =========================
-# PROMPT DO SISTEMA
+# PROMPTS
 # =========================
 
-SYSTEM_INSTRUCTION = """
+SYSTEM_INSTRUCTION_SINGLE = """
 Você é um especialista sênior em recrutamento e seleção, com foco em leitura prática de currículos, triagem inicial e apoio estratégico para entrevistas.
 
 Sua tarefa é analisar currículos em português do Brasil e responder de forma extremamente clara, objetiva e útil para recrutadores.
@@ -73,7 +72,7 @@ REGRAS DE ANÁLISE:
 - Os pontos de desenvolvimento devem ser tratados com respeito e linguagem profissional.
 - As perguntas estratégicas devem ajudar o recrutador a validar aderência, maturidade, execução e consistência.
 
-RETORNE APENAS JSON VÁLIDO, sem markdown, sem comentários e sem texto fora do JSON.
+RETORNE APENAS JSON VÁLIDO.
 
 FORMATO OBRIGATÓRIO:
 {
@@ -96,8 +95,8 @@ FORMATO OBRIGATÓRIO:
   ]
 }
 
-INSTRUÇÕES IMPORTANTES SOBRE OS CAMPOS:
-- "score_candidato": número inteiro entre 0 e 100 com base em clareza, coerência, apresentação, sinais de aderência e potencial de entrevista.
+INSTRUÇÕES IMPORTANTES:
+- "score_candidato": número inteiro entre 0 e 100.
 - "veredito": uma frase executiva curta.
 - "resumo_profissional": 1 parágrafo curto.
 - "quem_e_a_pessoa": 1 parágrafo curto descrevendo a impressão profissional.
@@ -108,6 +107,35 @@ INSTRUÇÕES IMPORTANTES SOBRE OS CAMPOS:
 Se houver pouca informação no currículo:
 - ainda assim preencha todos os campos
 - deixe claro que a análise foi limitada pela baixa quantidade de evidências
+"""
+
+SYSTEM_INSTRUCTION_COMPARE = """
+Você é um especialista sênior em recrutamento e seleção.
+
+Sua tarefa é comparar candidatos com base em análises individuais já produzidas.
+
+RETORNE APENAS JSON VÁLIDO.
+
+FORMATO OBRIGATÓRIO:
+{
+  "resumo_comparativo": "Texto curto comparando os candidatos",
+  "melhor_aderencia": "nome_arquivo",
+  "maior_potencial": "nome_arquivo",
+  "mais_experiente": "nome_arquivo",
+  "exige_maior_validacao": "nome_arquivo",
+  "ranking_final": [
+    "nome_arquivo_1",
+    "nome_arquivo_2",
+    "nome_arquivo_3"
+  ]
+}
+
+REGRAS:
+- Baseie-se apenas nas análises recebidas.
+- Seja objetivo.
+- Não invente experiência não informada.
+- Se houver empate técnico, ainda assim ordene pelo melhor julgamento possível.
+- O ranking deve ir do candidato mais aderente ao menos aderente.
 """
 
 # =========================
@@ -189,6 +217,157 @@ def validar_estrutura_resposta(dados: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def validar_comparacao(
+    dados: dict[str, Any],
+    nomes_arquivos: list[str]
+) -> dict[str, Any]:
+    ranking = dados.get("ranking_final", [])
+    if not isinstance(ranking, list):
+        ranking = []
+
+    ranking_limpo = [str(x).strip() for x in ranking if str(x).strip()]
+    ranking_filtrado = [x for x in ranking_limpo if x in nomes_arquivos]
+
+    # Completa ranking com nomes faltantes
+    for nome in nomes_arquivos:
+        if nome not in ranking_filtrado:
+            ranking_filtrado.append(nome)
+
+    def pick_nome(chave: str, fallback: str) -> str:
+        valor = str(dados.get(chave, "")).strip()
+        return valor if valor in nomes_arquivos else fallback
+
+    return {
+        "resumo_comparativo": dados.get(
+            "resumo_comparativo",
+            "Os candidatos apresentam perfis distintos e exigem validação complementar em entrevista."
+        ),
+        "melhor_aderencia": pick_nome("melhor_aderencia", nomes_arquivos[0]),
+        "maior_potencial": pick_nome("maior_potencial", nomes_arquivos[0]),
+        "mais_experiente": pick_nome("mais_experiente", nomes_arquivos[0]),
+        "exige_maior_validacao": pick_nome("exige_maior_validacao", nomes_arquivos[-1]),
+        "ranking_final": ranking_filtrado
+    }
+
+
+async def analisar_curriculo_individual(file: UploadFile) -> dict[str, Any]:
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail=f"O arquivo '{file.filename}' não é um PDF válido.")
+
+    pdf_bytes = await file.read()
+
+    if not pdf_bytes:
+        raise HTTPException(status_code=400, detail=f"O arquivo '{file.filename}' está vazio.")
+
+    tamanho_mb = len(pdf_bytes) / (1024 * 1024)
+    logger.info(f"Arquivo recebido: {file.filename} | {tamanho_mb:.2f} MB")
+
+    if tamanho_mb > 20:
+        raise HTTPException(
+            status_code=400,
+            detail=f"O arquivo '{file.filename}' é muito grande. Limite de 20 MB."
+        )
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            types.Part.from_bytes(
+                data=pdf_bytes,
+                mime_type="application/pdf"
+            ),
+            "Analise este currículo e retorne somente o JSON solicitado nas instruções do sistema."
+        ],
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_INSTRUCTION_SINGLE,
+            response_mime_type="application/json",
+            temperature=0.2
+        )
+    )
+
+    texto_resposta = getattr(response, "text", None)
+
+    if not texto_resposta:
+        raise HTTPException(status_code=500, detail=f"A IA não retornou conteúdo para '{file.filename}'.")
+
+    texto_resposta = limpar_json_texto(texto_resposta)
+
+    try:
+        analise_json = json.loads(texto_resposta)
+    except json.JSONDecodeError:
+        logger.error(f"JSON inválido da IA para arquivo {file.filename}: {texto_resposta}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"A IA retornou uma resposta inválida para '{file.filename}'."
+        )
+
+    analise_json = validar_estrutura_resposta(analise_json)
+    analise_json["nome_arquivo"] = file.filename or "curriculo.pdf"
+    return analise_json
+
+
+def comparar_candidatos(candidatos: list[dict[str, Any]]) -> dict[str, Any]:
+    nomes = [c["nome_arquivo"] for c in candidatos]
+
+    resumo_base = {
+        "candidatos": [
+            {
+                "nome_arquivo": c["nome_arquivo"],
+                "score_candidato": c["score_candidato"],
+                "veredito": c["veredito"],
+                "resumo_profissional": c["resumo_profissional"],
+                "quem_e_a_pessoa": c["quem_e_a_pessoa"],
+                "pontos_fortes": c["pontos_fortes"],
+                "pontos_desenvolvimento": c["pontos_desenvolvimento"],
+            }
+            for c in candidatos
+        ]
+    }
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            json.dumps(resumo_base, ensure_ascii=False)
+        ],
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_INSTRUCTION_COMPARE,
+            response_mime_type="application/json",
+            temperature=0.2
+        )
+    )
+
+    texto_resposta = getattr(response, "text", None)
+
+    if not texto_resposta:
+        # fallback simples por score
+        ordenados = sorted(candidatos, key=lambda x: x["score_candidato"], reverse=True)
+        return {
+            "resumo_comparativo": "Os candidatos apresentam níveis diferentes de aderência com base nas análises individuais.",
+            "melhor_aderencia": ordenados[0]["nome_arquivo"],
+            "maior_potencial": ordenados[0]["nome_arquivo"],
+            "mais_experiente": ordenados[0]["nome_arquivo"],
+            "exige_maior_validacao": ordenados[-1]["nome_arquivo"],
+            "ranking_final": [c["nome_arquivo"] for c in ordenados]
+        }
+
+    texto_resposta = limpar_json_texto(texto_resposta)
+
+    try:
+        comparacao_json = json.loads(texto_resposta)
+    except json.JSONDecodeError:
+        logger.error(f"JSON inválido na comparação: {texto_resposta}")
+        ordenados = sorted(candidatos, key=lambda x: x["score_candidato"], reverse=True)
+        comparacao_json = {
+            "resumo_comparativo": "Os candidatos apresentam níveis diferentes de aderência com base nas análises individuais.",
+            "melhor_aderencia": ordenados[0]["nome_arquivo"],
+            "maior_potencial": ordenados[0]["nome_arquivo"],
+            "mais_experiente": ordenados[0]["nome_arquivo"],
+            "exige_maior_validacao": ordenados[-1]["nome_arquivo"],
+            "ranking_final": [c["nome_arquivo"] for c in ordenados]
+        }
+
+    return validar_comparacao(comparacao_json, nomes)
+
+
 # =========================
 # ROTAS
 # =========================
@@ -211,71 +390,12 @@ async def health():
 
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
-    if not file:
-        raise HTTPException(status_code=400, detail="Nenhum arquivo enviado.")
-
-    if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Formato inválido. Envie um PDF.")
-
     try:
-        pdf_bytes = await file.read()
-
-        if not pdf_bytes:
-            raise HTTPException(status_code=400, detail="O arquivo PDF está vazio.")
-
-        tamanho_mb = len(pdf_bytes) / (1024 * 1024)
-        logger.info(f"Arquivo recebido: {file.filename}")
-        logger.info(f"Tipo: {file.content_type}")
-        logger.info(f"Tamanho: {tamanho_mb:.2f} MB")
-
-        if tamanho_mb > 20:
-            raise HTTPException(
-                status_code=400,
-                detail="O PDF é muito grande. Envie um arquivo com até 20 MB."
-            )
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[
-                types.Part.from_bytes(
-                    data=pdf_bytes,
-                    mime_type="application/pdf"
-                ),
-                "Analise este currículo e retorne somente o JSON solicitado nas instruções do sistema."
-            ],
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION,
-                response_mime_type="application/json",
-                temperature=0.2
-            )
-        )
-
-        texto_resposta = getattr(response, "text", None)
-
-        if not texto_resposta:
-            logger.error(f"Resposta vazia da IA: {response}")
-            raise HTTPException(status_code=500, detail="A IA não retornou conteúdo.")
-
-        texto_resposta = limpar_json_texto(texto_resposta)
-        logger.info(f"Resposta bruta da IA: {texto_resposta[:1000]}")
-
-        try:
-            analise_json = json.loads(texto_resposta)
-        except json.JSONDecodeError as e:
-            logger.error(f"Erro ao converter JSON: {str(e)}")
-            logger.error(f"Texto recebido da IA: {texto_resposta}")
-            raise HTTPException(
-                status_code=500,
-                detail="A IA retornou uma resposta inválida. Tente novamente com outro PDF."
-            )
-
-        analise_json = validar_estrutura_resposta(analise_json)
-
+        resultado = await analisar_curriculo_individual(file)
         return {
             "status": "sucesso",
-            "dados": analise_json
+            "dados": resultado
         }
-
     except HTTPException:
         raise
     except Exception as e:
@@ -291,6 +411,52 @@ async def analyze(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=500,
             detail=f"Erro no processamento: {erro_str}"
+        )
+
+
+@app.post("/analyze-multiple")
+async def analyze_multiple(files: List[UploadFile] = File(...)):
+    try:
+        if not files or len(files) < 2:
+            raise HTTPException(
+                status_code=400,
+                detail="Envie pelo menos 2 currículos em PDF para comparação."
+            )
+
+        if len(files) > 3:
+            raise HTTPException(
+                status_code=400,
+                detail="O limite atual é de até 3 currículos por comparação."
+            )
+
+        candidatos = []
+        for file in files:
+            resultado = await analisar_curriculo_individual(file)
+            candidatos.append(resultado)
+
+        comparacao = comparar_candidatos(candidatos)
+
+        return {
+            "status": "sucesso",
+            "candidatos": candidatos,
+            "comparacao": comparacao
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        erro_str = str(e)
+        logger.exception("ERRO INTERNO NO BACKEND RH MULTI")
+
+        if "RESOURCE_EXHAUSTED" in erro_str or "quota" in erro_str.lower():
+            raise HTTPException(
+                status_code=429,
+                detail="A cota da IA foi atingida no momento. Tente novamente mais tarde."
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro no processamento múltiplo: {erro_str}"
         )
 
 
